@@ -1,29 +1,15 @@
 const { createServer } = require('http');
 const { parse } = require('url');
-const { join } = require('path');
-const { statSync } = require('fs');
 const next = require('next');
 const { Server } = require('socket.io');
 
 const dev = process.env.NODE_ENV !== 'production';
-const app = next({ dev, conf: { distDir: '.next' } });
+const app = next({ dev });
 const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
-  const server = createServer(async (req, res) => {
+  const server = createServer((req, res) => {
     const parsedUrl = parse(req.url, true);
-    
-    // Serve static files explicitly for standalone
-    if (parsedUrl.pathname?.startsWith('/_next/static/') || parsedUrl.pathname?.startsWith('/_next/media/')) {
-      const filePath = join(__dirname, '.next', parsedUrl.pathname);
-      try {
-        statSync(filePath);
-        // Let Next.js handle it
-      } catch (e) {
-        // File not found
-      }
-    }
-    
     handle(req, res, parsedUrl);
   });
 
