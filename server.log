@@ -14,3 +14,11 @@ User aD7eKJsIhgDCC9ySAAAE joined room private-chat-room
 User connected: 1lMwjCk_5hCHN3igAAAH
 User 1lMwjCk_5hCHN3igAAAH joined room private-chat-room
 User disconnected: 1lMwjCk_5hCHN3igAAAH
+ GET / 200 in 19ms (next.js: 5ms, application-code: 13ms)
+ GET / 200 in 15ms (next.js: 5ms, application-code: 11ms)
+User disconnected: aD7eKJsIhgDCC9ySAAAE
+✓ Compiled in 13ms
+User connected: dl4VeAKbLPywceywAAAK
+User dl4VeAKbLPywceywAAAK joined room private-chat-room
+ GET / 200 in 16ms (next.js: 4ms, application-code: 12ms)
+✓ Compiled in 11ms

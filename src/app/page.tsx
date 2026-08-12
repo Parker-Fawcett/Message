@@ -20,7 +20,7 @@ export default function ChatPage() {
   const [isConnected, setIsConnected] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [otherUserTyping, setOtherUserTyping] = useState(false);
-  const [userId] = useState(() => Math.random().toString(36).substr(2, 9));
+  const [userId] = useState(() => Math.random().toString(36).substring(2, 11));
   const socketRef = useRef<Socket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout>();
@@ -125,7 +125,7 @@ export default function ChatPage() {
     if (!input.trim() || !socketRef.current) return;
 
     const newMessage: Message = {
-      id: Math.random().toString(36).substr(2, 9),
+      id: Math.random().toString(36).substring(2, 11),
       text: input.trim(),
       senderId: userId,
       timestamp: new Date(),

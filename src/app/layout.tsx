@@ -15,8 +15,6 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Private Chat",
   description: "Simple messaging for two",
-  mobileAppCapable: true,
-  mobileAppTitle: "Private Chat",
 };
 
 export const viewport: Viewport = {
