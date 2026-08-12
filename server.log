@@ -1,0 +1,16 @@
+
+> messaging-app@0.1.0 dev
+> node server.js
+
+✓ Running next.config.ts took 27ms
+> Ready on http://localhost:3000
+User connected: gLZyrdOSo15cgMvYAAAB
+User gLZyrdOSo15cgMvYAAAB joined room private-chat-room
+ GET / 200 in 220ms (next.js: 85ms, application-code: 136ms)
+User disconnected: gLZyrdOSo15cgMvYAAAB
+ GET / 200 in 51ms (next.js: 5ms, application-code: 46ms)
+User connected: aD7eKJsIhgDCC9ySAAAE
+User aD7eKJsIhgDCC9ySAAAE joined room private-chat-room
+User connected: 1lMwjCk_5hCHN3igAAAH
+User 1lMwjCk_5hCHN3igAAAH joined room private-chat-room
+User disconnected: 1lMwjCk_5hCHN3igAAAH

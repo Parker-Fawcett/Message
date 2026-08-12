@@ -24,3 +24,25 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@layer utilities {
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 1rem);
+  }
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0);
+  }
+  .h-dvh {
+    height: 100vh;
+    height: 100dvh;
+  }
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+textarea, input {
+  -webkit-appearance: none;
+  appearance: none;
+}
