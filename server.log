@@ -22,3 +22,5 @@ User connected: dl4VeAKbLPywceywAAAK
 User dl4VeAKbLPywceywAAAK joined room private-chat-room
  GET / 200 in 16ms (next.js: 4ms, application-code: 12ms)
 ✓ Compiled in 11ms
+ GET / 200 in 13ms (next.js: 3ms, application-code: 10ms)
+✓ Compiled in 14ms

@@ -23,7 +23,7 @@ export default function ChatPage() {
   const [userId] = useState(() => Math.random().toString(36).substring(2, 11));
   const socketRef = useRef<Socket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const typingTimeoutRef = useRef<NodeJS.Timeout>();
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const chatVisibleRef = useRef(true);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
