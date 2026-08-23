@@ -104,6 +104,13 @@ async function main() {
     pass("1b. mutual bundle discovery (badge shows 1 online)");
   } catch (e) { fail("1b. discovery", e); }
 
+  // Stable handle onto Bob's row (title attr carries the peer userId).
+  let bobRowSel = "";
+  try {
+    bobRowSel = await alice.locator(".conv-chip").first().getAttribute("title");
+    if (!bobRowSel) throw new Error("no title");
+  } catch (e) { fail("1c. capture bob row", e); }
+
   // ------------------------------------------------- 2. burst of messages --
   const burst = [`msg-a1-${Date.now()}`, `msg-a2-${Date.now()}`, `msg-a3-${Date.now()}`];
   try {
@@ -169,7 +176,7 @@ async function main() {
   // ----------------------------------------------------- 6. read receipts --
   try {
     // Back to Bob's conversation; receipts only fire for the ACTIVE thread.
-    await alice.locator(".conv-chip").nth(0).click();
+    await alice.locator(`.conv-chip[title="${bobRowSel}"]`).click();
     const receiptMsg = `receipt-probe-${Date.now()}`;
     await send(alice, receiptMsg);
     await expectVisible(bob, receiptMsg);
@@ -179,12 +186,22 @@ async function main() {
       if (carolText.includes(receiptMsg)) throw new Error("receipt probe leaked into Carol's view");
     }
     // Own-message status icon turns blue (read checkmark) once peer marks it.
-    await alice.waitForFunction(
-      () => Boolean(document.querySelector("main .text-blue-400")),
-      undefined,
-      { timeout: 15000 },
-    );
-    pass("6. sent -> delivered -> read receipts observed end-to-end (active-thread scoped)");
+    try {
+      await alice.waitForFunction(
+        () => Boolean(document.querySelector("main .text-blue-400")),
+        undefined,
+        { timeout: 15000 },
+      );
+      pass("6. sent -> delivered -> read receipts observed end-to-end (active-thread scoped)");
+    } catch (inner) {
+      const aBody = await alice.locator("body").innerText();
+      const bBody = await bob.locator("body").innerText();
+      console.log("DEBUG alice body:", JSON.stringify(aBody.slice(0, 300)));
+      console.log("DEBUG bob body:", JSON.stringify(bBody.slice(0, 300)));
+      console.log("DEBUG alice chips:", await alice.locator(".conv-chip").evaluateAll((els) => els.map((e) => e.textContent)));
+      console.log("DEBUG bob chips:", await bob.locator(".conv-chip").evaluateAll((els) => els.map((e) => e.textContent)));
+      throw inner;
+    }
   } catch (e) { fail("6. receipts", e); }
 
   // ------------------------------------------------------------ screenshots
