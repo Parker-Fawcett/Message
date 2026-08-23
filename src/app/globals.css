@@ -1,18 +1,41 @@
 @import "tailwindcss";
 
+/* ---------- theme tokens (light default; .dark flips the layer) ---------- */
+
 :root {
   --bg-canvas: #ffffff;
   --bg-panel: #ffffff;
+  --bg-card: #ffffff;
   --bg-surface: #f4f5f7;
-  --snap-yellow: #FFFC00;
   --ink: #16191c;
-  --text-primary: #16191c;
   --text-secondary: #5b6168;
-  --text-muted: #9aa0a8;
+  --text-muted: #6b7075;
+  --text-placeholder: #9aa0a8;
+  --border-hairline: #e8eaed;
+  --border-input: #e8eaed;
+  --snap-yellow: #fffc00;
   --accent-red: #f23c57;
   --status-online: #2dbd4a;
   --error: #e5484d;
-  --border-hairline: #e8eaed;
+  --ring-card: rgba(22, 25, 28, 0.06);
+  --composer-shadow: 0 2px 12px rgba(22, 25, 28, 0.08);
+}
+
+.dark {
+  --bg-canvas: #08090a;
+  --bg-panel: #0f1011;
+  --bg-card: #141516;
+  --bg-surface: #191a1b;
+  --ink: #f7f8f8;
+  --text-secondary: #d0d6e0;
+  --text-muted: #8a8f98;
+  --text-placeholder: #62666d;
+  --border-hairline: rgba(255, 255, 255, 0.08);
+  --border-input: rgba(255, 255, 255, 0.08);
+  /* snap-yellow stays #FFFC00 in both themes; ink-on-yellow pairs stay literal */
+  --status-online: #27a644;
+  --composer-shadow: none;
+  --ring-card: rgba(255, 255, 255, 0.1);
 }
 
 @theme inline {
@@ -21,14 +44,13 @@
 }
 
 html {
-  color-scheme: light;
+  color-scheme: light dark;
 }
 
 body {
   background: var(--bg-canvas);
-  color: var(--text-primary);
+  color: var(--ink);
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-  font-feature-settings: "cv01", "ss03";
   -webkit-font-smoothing: antialiased;
 }
 
@@ -60,21 +82,21 @@ input {
 @keyframes bubble-in {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(6px) scale(0.98);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
 @keyframes pulse-dot {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(39, 166, 68, 0.45);
+    box-shadow: 0 0 0 0 rgba(45, 189, 74, 0.4);
   }
   60% {
-    box-shadow: 0 0 0 5px rgba(39, 166, 68, 0);
+    box-shadow: 0 0 0 5px rgba(45, 189, 74, 0);
   }
 }
 
@@ -96,18 +118,18 @@ input {
   }
 }
 
-/* ---- thin scrollbars on dark canvas ---- */
+/* ---- scrollbars adapt to theme ---- */
 
 .scroll-dark {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+  scrollbar-color: rgba(128, 134, 139, 0.35) transparent;
 }
 .scroll-dark::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 .scroll-dark::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(128, 134, 139, 0.35);
   border-radius: 9999px;
 }
 .scroll-dark::-webkit-scrollbar-track {

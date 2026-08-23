@@ -27,8 +27,15 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-gray-50">{children}</body>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`} suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(localStorage.getItem("messaging-theme")==="dark"){document.documentElement.classList.add("dark")}}catch(e){}`,
+          }}
+        />
+      </head>
+      <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
 }

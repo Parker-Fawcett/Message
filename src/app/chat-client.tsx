@@ -147,6 +147,28 @@ export default function ChatPage() {
   const [vaultPass1, setVaultPass1] = useState("");
   const [vaultPass2, setVaultPass2] = useState("");
   const [vaultError, setVaultError] = useState("");
+  const [theme, setThemeState] = useState<"light" | "dark">(() =>
+    typeof window !== "undefined" && localStorage.getItem("messaging-theme") === "dark" ? "dark" : "light",
+  );
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", theme === "dark");
+  }, [theme]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSettingsOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  const setTheme = (t: "light" | "dark") => {
+    setThemeState(t);
+    localStorage.setItem("messaging-theme", t);
+    document.documentElement.classList.toggle("dark", t === "dark");
+  };
 
   useEffect(() => {
     setDisplayName(localStorage.getItem(DISPLAY_NAME_KEY) ?? "");
@@ -654,8 +676,8 @@ const IconSend = (
           className="pointer-events-none absolute inset-x-0 top-0 h-[460px]"
           style={{ background: "radial-gradient(ellipse 55% 55% at 50% -12%, #FFFC00 0%, rgba(255,252,0,0.35) 45%, transparent 70%)" }}
         />
-        <div className="relative w-full max-w-sm rounded-[2rem] bg-white p-3 shadow-[0_24px_70px_-20px_rgba(22,25,28,0.35)] ring-1 ring-black/[0.06]">
-          <div className="space-y-5 rounded-[calc(2rem-12px)] border border-[#e8eaed] bg-white p-8 text-center">
+        <div className="relative w-full max-w-sm rounded-[2rem] bg-(--bg-card) p-3 shadow-[var(--composer-shadow)] ring-(--ring-card)">
+          <div className="space-y-5 rounded-[calc(2rem-12px)] border border-(--border-hairline) bg-(--bg-panel) p-8 text-center">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-[1.25rem] bg-[#FFFC00] text-[#16191c] shadow-[0_6px_18px_rgba(255,252,0,0.5)]">
               <svg className="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
                 <rect x="5" y="11" width="14" height="9" rx="2.5" />
@@ -663,8 +685,8 @@ const IconSend = (
               </svg>
             </div>
             <div className="space-y-1.5">
-              <h1 className="text-xl font-bold tracking-tight text-[#16191c]">This chat is locked</h1>
-              <p className="text-sm text-[#6b7075]">Enter your passphrase to decrypt your messages.</p>
+              <h1 className="text-xl font-bold tracking-tight text-(--ink)">This chat is locked</h1>
+              <p className="text-sm text-(--text-secondary)">Enter your passphrase to decrypt your messages.</p>
             </div>
             <input
               type="password"
@@ -674,7 +696,7 @@ const IconSend = (
               onKeyDown={(e) => {
                 if (e.key === "Enter") void submitUnlock();
               }}
-              className="vault-unlock-input w-full rounded-full border border-[#e8eaed] bg-[#f4f5f7] px-4 py-3 text-base text-[#16191c] placeholder:text-[#9aa0a8] focus:outline-none focus:ring-[3px] focus:ring-[#FFFC00] focus:border-[#16191c]"
+              className="vault-unlock-input w-full rounded-full border border-(--border-input) bg-(--bg-surface) px-4 py-3 text-base text-(--ink) placeholder:text-(--text-placeholder) focus:outline-none focus:ring-[3px] focus:ring-[#FFFC00] focus:border-[#16191c]"
             />
             {vaultError && <p className="vault-error animate-pulse text-sm font-medium text-[#e5484d]">{vaultError}</p>}
             <button
@@ -697,14 +719,14 @@ const IconSend = (
     "conv-chip flex-shrink-0 rounded-full border px-3 py-1.5 text-[13px] transition-all duration-200";
   const chipActive =
     "bg-[#FFFC00] text-[#16191c] border-[#FFFC00] font-semibold scale-[1.03] shadow-[0_2px_10px_rgba(255,252,0,0.45)]";
-  const chipIdle = "bg-white text-[#16191c] border-[#e8eaed] hover:bg-[#f4f5f7]";
+  const chipIdle = "bg-(--bg-card) text-(--ink) border-(--border-hairline) hover:bg-(--bg-surface)";
   const badgeCls = () =>
     "ml-1.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 text-[10px] font-bold bg-[#f23c57] text-white";
 
   return (
-    <div className="flex h-dvh flex-col bg-white text-[#16191c]">
+    <div className="flex h-dvh flex-col bg-(--bg-canvas) text-(--ink)">
       {/* header */}
-      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-[#e8eaed] bg-white px-4 py-2.5">
+      <header className="sticky top-0 z-40 flex items-center justify-between border-b border-(--border-hairline) bg-(--bg-panel) px-4 py-2.5">
         <div className="flex min-w-0 items-center gap-2">
           <span aria-hidden className="flex h-7 w-7 items-center justify-center rounded-[0.6rem] bg-[#FFFC00]">
             <svg className="h-4 w-4 text-[#16191c]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -724,12 +746,12 @@ const IconSend = (
                 if (e.key === "Enter") saveDisplayName();
                 if (e.key === "Escape") setEditingName(false);
               }}
-              className="name-input w-28 rounded-full border border-[#e8eaed] bg-[#f4f5f7] px-3 py-1 text-sm text-[#16191c] focus:outline-none focus:ring-[3px] focus:ring-[#FFFC00]"
+              className="name-input w-28 rounded-full border border-(--border-input) bg-(--bg-surface) px-3 py-1 text-sm text-(--ink) focus:outline-none focus:ring-[3px] focus:ring-[#FFFC00]"
             />
           ) : (
             <button
               onClick={() => setEditingName(true)}
-              className="name-btn max-w-[140px] truncate rounded-full px-2 py-0.5 text-xs text-[#6b7075] transition-colors duration-200 hover:bg-[#f4f5f7] hover:text-[#16191c]"
+              className="name-btn max-w-[140px] truncate rounded-full px-2 py-0.5 text-xs text-(--text-muted) transition-colors duration-200 hover:bg-(--bg-surface) hover:text-(--ink)"
               title="Set the name other people see"
             >
               {displayName.trim() || "set your name"}
@@ -753,7 +775,7 @@ const IconSend = (
                 setShowVaultForm(true);
                 setVaultError("");
               }}
-              className="vault-enable-btn inline-flex items-center gap-1 rounded-full border border-[#e8eaed] px-2.5 py-1 text-[11px] font-semibold text-[#16191c] transition-colors duration-200 hover:bg-[#f4f5f7]"
+              className="vault-enable-btn inline-flex items-center gap-1 rounded-full border border-(--border-hairline) px-2.5 py-1 text-[11px] font-semibold text-(--ink) transition-colors duration-200 hover:bg-(--bg-surface)"
               title="Encrypt your messages and identity keys at rest behind a passphrase"
             >
               Passphrase
@@ -762,7 +784,7 @@ const IconSend = (
           {isReady && vaultConfigured && (
             <button
               onClick={() => void lockNow()}
-              className="vault-lock-btn inline-flex items-center gap-1 rounded-full border border-[#e8eaed] px-2.5 py-1 text-[11px] font-semibold text-[#16191c] transition-colors duration-200 hover:bg-[#f4f5f7]"
+              className="vault-lock-btn inline-flex items-center gap-1 rounded-full border border-(--border-hairline) px-2.5 py-1 text-[11px] font-semibold text-(--ink) transition-colors duration-200 hover:bg-(--bg-surface)"
               title="Encrypt local data and require your passphrase"
             >
               Lock
@@ -771,7 +793,7 @@ const IconSend = (
           {!pushEnabled && isReady && (
             <button
               onClick={() => void enablePush()}
-              className="inline-flex items-center gap-1 rounded-full border border-[#e8eaed] px-2.5 py-1 text-[11px] font-semibold text-[#16191c] transition-colors duration-200 hover:bg-[#f4f5f7]"
+              className="inline-flex items-center gap-1 rounded-full border border-(--border-hairline) px-2.5 py-1 text-[11px] font-semibold text-(--ink) transition-colors duration-200 hover:bg-(--bg-surface)"
               title="Get notified when messages arrive while the tab is closed"
             >
               Push
@@ -780,6 +802,57 @@ const IconSend = (
           {onlineCount > 0 && (
             <span className="text-xs font-semibold text-[#16191c]">{onlineCount} online</span>
           )}
+          <div className="relative">
+            <button
+              onClick={() => setSettingsOpen((o) => !o)}
+              aria-label="Settings"
+              className={`flex h-7 w-7 items-center justify-center rounded-md border transition-colors duration-200 ${
+                settingsOpen
+                  ? "bg-(--bg-surface) text-(--ink) border-(--border-hairline)"
+                  : "border-transparent text-(--text-muted) hover:bg-(--bg-surface) hover:text-(--ink)"
+              }`}
+            >
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+                <circle cx="12" cy="12" r="3" />
+                <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9c.63.63 1.34.27 1.51 1H21a2 2 0 110 4h-.09c-.66.13-1.2.6-1.51 1z" strokeLinejoin="round" />
+              </svg>
+            </button>
+            {settingsOpen && (
+              <>
+                <div className="fixed inset-0 z-20" onClick={() => setSettingsOpen(false)} />
+                <div className="settings-panel absolute right-0 top-full z-30 mt-2 w-60 space-y-3 rounded-2xl border border-(--border-hairline) bg-(--bg-card) p-3 shadow-xl">
+                  <p className="px-1 text-[10px] font-medium uppercase tracking-[0.08em] text-(--text-muted)">
+                    Appearance
+                  </p>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {(["light", "dark"] as const).map((t) => (
+                      <button
+                        key={t}
+                        onClick={() => setTheme(t)}
+                        className={`flex items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-semibold capitalize transition-all duration-200 ${
+                          theme === t
+                            ? "bg-[#FFFC00] text-[#16191c]"
+                            : "bg-(--bg-surface) text-(--text-secondary) hover:brightness-95"
+                        }`}
+                      >
+                        {t === "light" ? (
+                          <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <circle cx="12" cy="12" r="4" />
+                            <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" strokeLinecap="round" />
+                          </svg>
+                        ) : (
+                          <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" strokeLinejoin="round" />
+                          </svg>
+                        )}
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
           <span
             className={`h-2 w-2 rounded-full ${isConnected ? "animate-pulse bg-[#2dbd4a]" : "bg-[#e5484d]"}`}
             title={isConnected ? "Connected" : "Disconnected"}
@@ -788,7 +861,7 @@ const IconSend = (
       </header>
 
       {/* conversation chips */}
-      <nav className="sticky top-[57px] z-10 flex gap-2 overflow-x-auto border-b border-[#e8eaed] bg-white px-3 py-2">
+      <nav className="sticky top-[57px] z-10 flex gap-2 overflow-x-auto border-b border-(--border-hairline) bg-(--bg-panel) px-3 py-2">
         {peerIds.map((peerId) => {
           const conv: Conversation = { kind: "dm", peerId };
           const count = unread[roomFor(conv, myUserId())] ?? 0;
@@ -826,7 +899,7 @@ const IconSend = (
           <button
             onClick={() => void createGroup()}
             aria-label="Create a group with current peers"
-            className="conv-create flex-shrink-0 rounded-full border border-dashed border-[#d5d9de] px-3 py-1.5 text-[13px] font-semibold text-[#6b7075] transition-colors duration-200 hover:border-[#16191c] hover:text-[#16191c]"
+            className="conv-create flex-shrink-0 rounded-full border border-dashed border-(--border-hairline) px-3 py-1.5 text-[13px] font-semibold text-(--text-muted) transition-colors duration-200 hover:border-(--ink) hover:text-(--ink)"
           >
             +
           </button>
@@ -842,7 +915,7 @@ const IconSend = (
                 <path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6l7-3z" strokeLinejoin="round" />
               </svg>
             </div>
-            <p className="max-w-[260px] text-sm text-[#6b7075]">
+            <p className="max-w-[260px] text-sm text-(--text-muted)">
               Waiting for someone to connect. Everything you send here is end-to-end encrypted.
             </p>
           </div>
@@ -856,21 +929,21 @@ const IconSend = (
                       <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#16191c] text-[9px] font-bold uppercase text-[#FFFC00]">
                         {(labelFor(msg.senderId)[0] ?? "?").toUpperCase()}
                       </span>
-                      <span className="text-[11px] font-semibold text-[#6b7075]">{labelFor(msg.senderId)}</span>
+                      <span className="text-[11px] font-semibold text-(--text-muted)">{labelFor(msg.senderId)}</span>
                     </div>
                   )}
                   <div
                     className={`rounded-[22px] px-4 py-2.5 text-[15px] leading-[1.45] shadow-[0_1px_3px_rgba(22,25,28,0.08)] ${
                       msg.isOwn
                         ? "rounded-br-[7px] bg-[#FFFC00] text-[#16191c]"
-                        : "rounded-bl-[7px] border border-[#eceef0] bg-[#f4f5f7] text-[#16191c]"
+                        : "rounded-bl-[7px] border border-(--border-hairline) bg-(--bg-surface) text-(--ink)"
                     }`}
                   >
                     <p className={`whitespace-pre-wrap break-words ${msg.text === UNABLE_TO_DECRYPT ? "italic opacity-50" : ""}`}>
                       {msg.text}
                     </p>
                     <div className="mt-0.5 flex items-center justify-end gap-1">
-                      <span className={`font-mono text-[10px] ${msg.isOwn ? "text-[#16191c]/55" : "text-[#9aa0a8]"}`}>
+                      <span className={`font-mono text-[10px] ${msg.isOwn ? "text-[#16191c]/55" : "text-(--text-placeholder)"}`}>
                         {msg.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                       </span>
                       {msg.isOwn && getStatusIcon(msg.status)}
@@ -882,12 +955,12 @@ const IconSend = (
 
             {otherTypingInActive && (
               <div className="flex justify-start">
-                <div className="rounded-[22px] rounded-bl-[7px] border border-[#eceef0] bg-[#f4f5f7] px-4 py-3">
+                <div className="rounded-[22px] rounded-bl-[7px] border border-(--border-hairline) bg-(--bg-surface) px-4 py-3">
                   <div className="flex gap-1.5">
                     {[0, 1, 2].map((i) => (
                       <span
                         key={i}
-                        className="h-2 w-2 animate-bounce rounded-full bg-[#16191c]"
+                        className="h-2 w-2 animate-bounce rounded-full bg-(--ink)"
                         style={{ animationDelay: `${i * 120}ms` }}
                       />
                     ))}
@@ -904,10 +977,10 @@ const IconSend = (
       {/* vault enable modal */}
       {showVaultForm && (
         <div className="fixed inset-0 z-30 flex items-center justify-center bg-[#16191c]/60 px-4 backdrop-blur-sm">
-          <div className="w-full max-w-sm rounded-[2rem] bg-white p-3 shadow-[0_30px_80px_-20px_rgba(22,25,28,0.4)] ring-1 ring-black/[0.06]">
-            <div className="space-y-4 rounded-[calc(2rem-12px)] border border-[#e8eaed] p-6">
+          <div className="w-full max-w-sm rounded-[2rem] bg-(--bg-card) p-3 ring-(--ring-card)">
+            <div className="space-y-4 rounded-[calc(2rem-12px)] border border-(--border-hairline) p-6">
               <div className="space-y-1">
-                <h2 className="text-lg font-bold text-[#16191c]">Encrypt local data</h2>
+                <h2 className="text-lg font-bold text-(--ink)">Encrypt local data</h2>
                 <p className="text-xs leading-relaxed text-[#6b7075]">
                   Messages and identity keys will be encrypted at rest behind this passphrase.
                   If you forget it, this device&apos;s history is unrecoverable.
@@ -918,14 +991,14 @@ const IconSend = (
                 placeholder="Passphrase (min 8 characters)"
                 value={vaultPass1}
                 onChange={(e) => setVaultPass1(e.target.value)}
-                className="vault-pass w-full rounded-full border border-[#e8eaed] bg-[#f4f5f7] px-4 py-2.5 text-base text-[#16191c] placeholder:text-[#9aa0a8] focus:outline-none focus:ring-[3px] focus:ring-[#FFFC00] focus:border-[#16191c]"
+                className="vault-pass w-full rounded-full border border-(--border-input) bg-(--bg-surface) px-4 py-2.5 text-base text-(--ink) placeholder:text-(--text-placeholder) focus:outline-none focus:ring-[3px] focus:ring-[#FFFC00] focus:border-[#16191c]"
               />
               <input
                 type="password"
                 placeholder="Repeat passphrase"
                 value={vaultPass2}
                 onChange={(e) => setVaultPass2(e.target.value)}
-                className="vault-pass2 w-full rounded-full border border-[#e8eaed] bg-[#f4f5f7] px-4 py-2.5 text-base text-[#16191c] placeholder:text-[#9aa0a8] focus:outline-none focus:ring-[3px] focus:ring-[#FFFC00] focus:border-[#16191c]"
+                className="vault-pass2 w-full rounded-full border border-(--border-input) bg-(--bg-surface) px-4 py-2.5 text-base text-(--ink) placeholder:text-(--text-placeholder) focus:outline-none focus:ring-[3px] focus:ring-[#FFFC00] focus:border-[#16191c]"
               />
               {vaultError && <p className="vault-error text-sm font-medium text-[#e5484d]">{vaultError}</p>}
               <div className="flex gap-2 pt-1">
@@ -942,7 +1015,7 @@ const IconSend = (
                     setVaultPass1("");
                     setVaultPass2("");
                   }}
-                  className="flex-1 rounded-full bg-[#f4f5f7] py-2.5 text-sm font-semibold text-[#16191c] transition-colors duration-200 hover:bg-[#e8eaed]"
+                  className="flex-1 rounded-full bg-(--bg-surface) py-2.5 text-sm font-semibold text-(--ink) transition-colors duration-200 hover:brightness-95"
                 >
                   Cancel
                 </button>
@@ -953,9 +1026,9 @@ const IconSend = (
       )}
 
       {/* composer */}
-      <footer className="sticky bottom-0 border-t border-[#e8eaed] bg-white p-3 pb-safe">
+      <footer className="sticky bottom-0 border-t border-(--border-hairline) bg-(--bg-panel) p-3 pb-safe">
         <div className="mx-auto flex max-w-3xl items-end gap-2">
-          <div className="flex-1 rounded-[1.6rem] border border-[#e8eaed] bg-white shadow-[0_2px_12px_rgba(22,25,28,0.08)] focus-within:border-[#16191c]">
+          <div className="flex-1 rounded-[1.6rem] border border-(--border-input) bg-(--bg-card) shadow-(--composer-shadow) focus-within:border-(--ink)">
             <textarea
               ref={textareaRef}
               value={input}
@@ -978,7 +1051,7 @@ const IconSend = (
               autoCapitalize="sentences"
               spellCheck={true}
               inputMode="text"
-              className="max-h-40 min-h-[44px] w-full resize-none bg-transparent px-4 py-2.5 text-base text-[#16191c] placeholder:text-[#9aa0a8] focus:outline-none disabled:opacity-60"
+              className="max-h-40 min-h-[44px] w-full resize-none bg-transparent px-4 py-2.5 text-base text-(--ink) placeholder:text-(--text-placeholder) focus:outline-none disabled:opacity-60"
             />
           </div>
           <button

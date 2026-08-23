@@ -74,6 +74,21 @@ modals/cards `rounded-3xl`.
 Unchanged from v1 (safe-area, ≥44px targets, landmarks, contrast: ink on
 yellow = 14.6:1 ✓).
 
+## 7b. Dual Theme (v2.1)
+
+Light is default; a `.dark` class on `<html>` flips the token layer (see
+globals.css `:root` / `.dark` blocks — canvas #08090a, panel #0f1011,
+surface #191a1b, ink #f7f8f8, borders white/8%). Snap-yellow, ink-on-yellow
+pairs, and error red are constant across themes. Preference persists in
+localStorage (`messaging-theme`); a no-flash inline script in layout.tsx
+applies the class before first paint.
+
+Primitive: **Settings popover** — gear button in header right cluster;
+absolute panel (w-60) with Appearance segmented control (Light/Dark +
+sun/moon icons). Header carries z-40 so the panel clears the sticky chip
+nav; Esc and backdrop click dismiss. Reduced-motion: all transitions
+collapse per global rule.
+
 ## 8. Accepted Debt
 
 v1 items plus: yellow-only light theme (no dark variant — Snap is
