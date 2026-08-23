@@ -20,6 +20,11 @@ const PUSH_LOOPBACK = process.env.PUSH_MODE === 'loopback';
 const VAPID_FILE = '.vapid.json';
 
 function loadOrCreateVapid() {
+  // Env-provided keys survive redeploys and keep existing subscriptions
+  // valid; fall back to a generated .vapid.json for local development.
+  if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+    return { publicKey: process.env.VAPID_PUBLIC_KEY, privateKey: process.env.VAPID_PRIVATE_KEY };
+  }
   try {
     return JSON.parse(fs.readFileSync(VAPID_FILE, 'utf8'));
   } catch {
