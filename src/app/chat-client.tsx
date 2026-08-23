@@ -910,6 +910,7 @@ const IconSend = (
           />
         </div>
       </header>
+      <div className="flex min-w-0 flex-1 overflow-hidden">
 
       {/* chat list (Snap-style bars) */}
       <aside
@@ -1005,9 +1006,7 @@ const IconSend = (
       </aside>
 
       {/* detail column */}
-      <section
-        className={`${activeConv ? "flex" : "hidden md:flex"} min-w-0 flex-1 flex-col`}
-      >
+      <section className={`${activeConv ? "flex" : "hidden md:flex"} min-h-0 min-w-0 flex-1 flex-col overflow-hidden`}>
         {/* mobile back bar */}
         <div className="md:hidden flex items-center gap-2 border-b border-(--border-hairline) bg-(--bg-panel) px-3 py-2">
           <button
@@ -1022,7 +1021,6 @@ const IconSend = (
           <span className="text-[15px] font-semibold truncate">{activeLabel}</span>
         </div>
 
-            <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         {/* mobile back bar */}
         <div className="flex items-center gap-2 border-b border-(--border-hairline) bg-(--bg-panel) px-3 py-2 md:hidden">
           <button
@@ -1199,8 +1197,8 @@ const IconSend = (
             </button>
           </div>
         </footer>
-      </div>
       </section>
+      </div>
     </div>
   );
 }
