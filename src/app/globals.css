@@ -1,21 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  --bg-canvas: #08090a;
-  --bg-panel: #0f1011;
-  --bg-surface: #191a1b;
-  --text-primary: #f7f8f8;
-  --text-secondary: #d0d6e0;
-  --text-muted: #8a8f98;
-  --text-faint: #62666d;
-  --accent: #5e6ad2;
-  --accent-bright: #7170ff;
-  --accent-hover: #828fff;
-  --security-lavender: #7a7fad;
-  --status-online: #27a644;
+  --bg-canvas: #ffffff;
+  --bg-panel: #ffffff;
+  --bg-surface: #f4f5f7;
+  --snap-yellow: #FFFC00;
+  --ink: #16191c;
+  --text-primary: #16191c;
+  --text-secondary: #5b6168;
+  --text-muted: #9aa0a8;
+  --accent-red: #f23c57;
+  --status-online: #2dbd4a;
   --error: #e5484d;
-  --border-hairline: rgba(255, 255, 255, 0.06);
-  --border-standard: rgba(255, 255, 255, 0.08);
+  --border-hairline: #e8eaed;
 }
 
 @theme inline {
@@ -24,7 +21,7 @@
 }
 
 html {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
@@ -82,7 +79,7 @@ input {
 }
 
 .bubble-in {
-  animation: bubble-in 240ms cubic-bezier(0.32, 0.72, 0, 1) both;
+  animation: bubble-in 260ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
 .pulse-dot {

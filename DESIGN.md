@@ -1,5 +1,90 @@
 # DESIGN.md — Private Chat
 
+> **v2 ACTIVE — "Snap energy" pivot.** User named Snap as the target feel.
+> Light-native, high-energy consumer messenger: signature `#FFFC00` yellow
+> color-blocking, bold near-black type on white, playful rounded geometry,
+> springy micro-motion. v1 (Linear dark-luxe) preserved below for reference;
+> all v1 dark tokens are retired.
+
+Design contract for the messenger UI. Provenance: public Snapchat brand
+language (no official reference file exists in the library — documented
+fallback per routing rules). Execution discipline: redesign-skill +
+interaction-skill mechanics (springs, reduced motion, GPU-safe transforms).
+
+## 1. Brand & Atmosphere
+
+Bright, fast, confident. Yellow is the brand voice and appears as solid
+color BLOCKS (active chips, own bubbles, send button) with near-black text
+on top — never as thin accents. Everything is rounded and slightly
+oversized-feeling. Whitespace comes from the white canvas; structure comes
+from a single gray hairline family.
+
+## 2. Color Tokens (ACTIVE)
+
+| Token | Value | Use |
+|---|---|---|
+| `--bg-canvas` | `#ffffff` | App background |
+| `--bg-panel` | `#ffffff` | Header, nav, composer (hairline-separated) |
+| `--bg-surface` | `#f4f5f7` | Incoming bubbles, hover fills |
+| `--snap-yellow` | `#FFFC00` | Own bubbles, active chip, send button, brand moments |
+| `--ink` | `#16191c` | Primary text (on white AND on yellow) |
+| `--text-secondary` | `#5b6168` | Secondary text |
+| `--text-muted` | `#6b7075` | Timestamps, placeholders |
+| `--accent-red` | `#f23c57` | Unread/notification badge (Snap red) |
+| `--status-online` | `#2dbd4a` | Connection dot |
+| `--error` | `#e5484d` | Errors |
+| `--border-hairline` | `#e8eaed` | Default separators |
+| Read receipt | `#0fadff` (Snap opened-blue) | `.text-blue-400` hook restyled visually via arbitrary value BUT class name preserved |
+
+Own bubble = yellow block + ink text. Incoming = `#f4f5f7` block + ink text.
+Yellow NEVER carries white text.
+
+## 3. Typography
+
+Geist Sans. Weights: 500 body/UI (chunkier than v1 — Snap is bold),
+600/700 for titles and active chips. Timestamps 10px Geist Mono muted.
+
+## 4. Spacing & Radius
+
+Same grid. Radii pushed rounder: bubbles `rounded-[22px]` w/ one squared
+corner, composer shell `rounded-full` pill, chips `rounded-full`,
+modals/cards `rounded-3xl`.
+
+## 5. Primitives & States
+
+- Chip: white pill, `#e8eaed` border, ink text; active = yellow fill + ink
+  semibold + subtle scale(1.02); unread badge = `#f23c57` red circle, white text.
+- Bubble entrance: `bubble-in` spring-ish 260ms cubic-bezier(0.34,1.56,0.64,1)
+  (slight overshoot — playful).
+- Composer: white pill shell w/ hairline + soft shadow (`0 2px 12px rgba(22,25,28,0.08)`);
+  send = yellow circle w/ ink arrow, press scale(0.92).
+- Header buttons: ghost pills, hover `#f4f5f7`.
+- Lock screen: white canvas, giant yellow radial glow top-center (40%
+  opacity), white double-bezel card, yellow Unlock button w/ ink text.
+- Focus rings: 3px `#FFFC00` + outer ink ring (yellow needs the dark halo
+  on white).
+
+## 6. Motion
+
+`cubic-bezier(0.34, 1.56, 0.64, 1)` overshoot curve for entrances/presses;
+200ms ease-out for color. Reduced-motion kills all (unchanged).
+
+## 7. Responsive & Accessibility
+
+Unchanged from v1 (safe-area, ≥44px targets, landmarks, contrast: ink on
+yellow = 14.6:1 ✓).
+
+## 8. Accepted Debt
+
+v1 items plus: yellow-only light theme (no dark variant — Snap is
+light-native); `.text-blue-400` literal class retained as suite hook while
+rendering `#0fadff`.
+
+---
+---
+
+# v1 (RETIRED) — Linear dark-luxe
+
 Design contract for the messenger UI. Direction: **"encrypted terminal-luxe"** —
 Linear's dark-native luminance system applied to a private chat; conversations
 emerge from near-black like starlight, one chromatic voice (indigo-violet),
