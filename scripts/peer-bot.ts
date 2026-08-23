@@ -76,9 +76,12 @@ function reply(text: string): string {
   }
   if (/^!time/.test(t)) return `Server clock says ${new Date().toLocaleTimeString()}.`;
   if (/^!who/.test(t)) {
-    const sk = JSON.parse(localStorage.getItem("messaging-protocol-state-v1") ?? "{}") as { sessions?: Record<string, unknown> };
-    const peers = Object.keys(sk.sessions ?? {});
-    return `I have established encrypted sessions with: ${peers.length > 0 ? peers.join(", ") : "no one yet"}.`;
+    let peers: string[] = [];
+    try {
+      peers = JSON.parse(storage.getItem("bot-known-peers") ?? "[]");
+    } catch {}
+    const names = peers.map((id) => (id === USER_ID ? NAME : id));
+    return `I have established encrypted sessions with: ${names.length > 0 ? names.join(", ") : "no one yet"}.`;
   }
   if (/^!joke/.test(t)) {
     const jokes = [
@@ -276,6 +279,9 @@ async function boot() {
     }
   }, 15_000);
 }
+
+process.on("uncaughtException", (e) => log(`UNCAUGHT: ${e.stack?.slice(0, 200) ?? e}`));
+process.on("unhandledRejection", (e) => log(`UNHANDLED REJECTION: ${String(e).slice(0, 200)}`));
 
 boot().catch((e) => {
   console.error("bot failed to start:", e);

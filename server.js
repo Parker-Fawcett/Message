@@ -101,7 +101,7 @@ function tap(payload) {
     }
   });
 
-  // Prekey bundle registry: userId -> { bundle, unservedOtks }. The relay
+  // Prekey bundle registry: userId -> { bundle, unserved, served, lastSeen }. The relay
   // stores and serves these so peers can establish E2EE sessions, but never
   // needs any private material or plaintext (message payloads are opaque
   // ciphertext). Entries persist across disconnects so offline peers remain
@@ -183,9 +183,18 @@ function tap(payload) {
       if (!userId || !bundle) return;
       const firstSeen = !socket.data.userId;
       socket.data.userId = userId;
+      const prev = bundlesByUser.get(userId);
+      // An OTK id already handed out stays dead forever, even across
+      // republishes; brand-new ids start life as unserved.
+      const servedSet = new Set(prev ? prev.served : []);
+      console.log('[srv] publish', userId, 'otk count:', (bundle.oneTimePreKeys||[]).length, 'prevServed:', prev ? prev.served.length : 'none');
+      const unserved = (bundle.oneTimePreKeys || [])
+        .map((otk) => otk.id)
+        .filter((id) => !servedSet.has(id));
       bundlesByUser.set(userId, {
         bundle,
-        unservedOtks: (bundle.oneTimePreKeys || []).map((otk) => otk.id),
+        unserved,
+        served: [...servedSet],
         lastSeen: Date.now()
       });
       if (firstSeen) {
@@ -203,7 +212,10 @@ function tap(payload) {
       sweepStaleBundles();
       const entry = bundlesByUser.get(targetUserId);
       if (!entry) return ack(null);
-      const otkId = entry.unservedOtks.shift();
+
+      // Hand out each one-time prekey at most once, ever.
+      console.log('[srv] get-bundle', targetUserId, 'unserved:', JSON.stringify(entry.unserved));
+      const otkId = entry.unserved.shift();
       const oneTimePreKeys = otkId !== undefined
         ? entry.bundle.oneTimePreKeys.filter((otk) => otk.id === otkId)
         : [];
