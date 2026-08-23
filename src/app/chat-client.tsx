@@ -596,53 +596,92 @@ export default function ChatPage() {
     if (created) setActiveConv({ kind: "group", groupId });
   };
 
-  const getStatusIcon = (status?: string) => {
-    switch (status) {
-      case "read":
-        return (
-          <svg className="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M18 7l-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17 7.48 12l-1.41 1.41L11.66 19l12-12-1.42-1.41zM.41 13.41L6 19l1.41-1.41L1.83 12 .41 13.41z" />
-          </svg>
-        );
-      case "delivered":
-        return (
-          <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
-          </svg>
-        );
-      default:
-        return (
-          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-          </svg>
-        );
-    }
-  };
+
+const IconShield = (
+  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+    <path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6l7-3z" strokeLinejoin="round" />
+    <path d="M9.5 12l1.8 1.8L15 10" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+const IconBell = (
+  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+    <path d="M6 9a6 6 0 1112 0c0 4 1.5 5.5 1.5 5.5h-15S6 13 6 9z" strokeLinejoin="round" />
+    <path d="M10 18a2 2 0 004 0" strokeLinecap="round" />
+  </svg>
+);
+const IconLock = (
+  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+    <rect x="5" y="11" width="14" height="9" rx="2" />
+    <path d="M8 11V8a4 4 0 118 0v3" strokeLinecap="round" />
+  </svg>
+);
+const IconSend = (
+  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+    <path d="M12 19V5m0 0l-6 6m6-6l6 6" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const getStatusIcon = (status?: string) => {
+  switch (status) {
+    case "read":
+      return (
+        <svg className="text-blue-400 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+          <path d="M2 12l4.5 4.5L15 8" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M9 12l4.5 4.5L22 8" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      );
+    case "delivered":
+      return (
+        <svg className="h-4 w-4 text-white/40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+          <path d="M2 12l4.5 4.5L15 8" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M9 12l4.5 4.5L22 8" strokeLinecap="round" strokeLinejoin="round" opacity="0.35" />
+        </svg>
+      );
+    default:
+      return (
+        <svg className="h-4 w-4 text-white/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+          <path d="M20 7L9 18l-5-4" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      );
+  }
+};
+
+  /* ---------------- locked gate (signature screen) ---------------- */
 
   if (vaultLocked) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen h-dvh bg-gray-50 px-4">
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-8 max-w-sm w-full space-y-4 text-center">
-          <div className="text-4xl">🔒</div>
-          <h1 className="text-lg font-semibold text-gray-900">This chat is locked</h1>
-          <p className="text-sm text-gray-500">Enter your passphrase to decrypt your messages.</p>
-          <input
-            type="password"
-            autoFocus
-            placeholder="Passphrase"
-            onChange={(e) => setVaultPass1(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") void submitUnlock();
-            }}
-            className="vault-unlock-input w-full px-3 py-2 text-base border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          {vaultError && <p className="vault-error text-sm text-red-600">{vaultError}</p>}
-          <button
-            onClick={() => void submitUnlock()}
-            className="w-full bg-blue-600 text-white py-2.5 rounded-xl hover:bg-blue-700"
-          >
-            Unlock
-          </button>
+      <div className="relative flex h-dvh flex-col items-center justify-center overflow-hidden bg-[#08090a] px-4">
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 h-[420px]"
+          style={{ background: "radial-gradient(ellipse 60% 50% at 50% -10%, rgba(94,106,210,0.16), transparent)" }}
+        />
+        <div className="relative w-full max-w-sm rounded-[1.75rem] bg-white/[0.03] p-[7px] ring-1 ring-white/[0.06]">
+          <div className="space-y-5 rounded-[calc(1.75rem-7px)] border border-white/[0.06] bg-[#0f1011] p-8 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#5e6ad2]/15 text-[#a5acff] ring-1 ring-[#7170ff]/25">
+              {IconLock}
+            </div>
+            <div className="space-y-1.5">
+              <h1 className="text-lg font-medium tracking-tight text-[#f7f8f8]">This chat is locked</h1>
+              <p className="text-sm text-[#8a8f98]">Enter your passphrase to decrypt your messages.</p>
+            </div>
+            <input
+              type="password"
+              autoFocus
+              placeholder="Passphrase"
+              onChange={(e) => setVaultPass1(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") void submitUnlock();
+              }}
+              className="vault-unlock-input w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-base text-[#f7f8f8] placeholder:text-[#62666d] focus:outline-none focus:ring-2 focus:ring-[#7170ff]/60"
+            />
+            {vaultError && <p className="vault-error animate-pulse text-sm text-[#e5484d]">{vaultError}</p>}
+            <button
+              onClick={() => void submitUnlock()}
+              className="w-full rounded-xl bg-[#5e6ad2] py-2.5 text-sm font-medium text-white transition-all duration-200 hover:bg-[#7170ff] active:scale-[0.98]"
+            >
+              Unlock
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -650,11 +689,23 @@ export default function ChatPage() {
 
   const peerIds = Object.keys(peers);
 
+  const labelFor = (peerId: string) => peers[peerId]?.displayName?.trim() || shortLabel(peerId);
+
+  const chipBase =
+    "conv-chip flex-shrink-0 rounded-full border px-2.5 py-1 text-[13px] font-medium transition-colors duration-200";
+  const chipActive = "bg-[#5e6ad2] text-white border-[#5e6ad2]";
+  const chipIdle = "bg-transparent text-[#d0d6e0] border-white/[0.08] hover:bg-white/[0.04]";
+  const badgeCls = (isActive: boolean) =>
+    `ml-1.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 text-[10px] font-medium ${
+      isActive ? "bg-white/25 text-white" : "bg-[#5e6ad2] text-white"
+    }`;
+
   return (
-    <div className="flex flex-col h-screen h-dvh bg-gray-50">
-      <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between shadow-sm sticky top-0 z-10">
-        <div className="flex items-center gap-2 min-w-0">
-          <h1 className="text-lg font-semibold text-gray-900 truncate">Private Chat</h1>
+    <div className="flex h-dvh flex-col bg-[#08090a] text-[#f7f8f8]">
+      {/* header */}
+      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-white/[0.06] bg-[#0f1011]/90 px-4 py-2.5 backdrop-blur-sm">
+        <div className="flex min-w-0 items-center gap-2">
+          <h1 className="truncate text-[15px] font-medium tracking-tight text-[#f7f8f8]">Private Chat</h1>
           {editingName ? (
             <input
               autoFocus
@@ -667,129 +718,82 @@ export default function ChatPage() {
                 if (e.key === "Enter") saveDisplayName();
                 if (e.key === "Escape") setEditingName(false);
               }}
-              className="name-input w-28 px-2 py-1 text-sm border border-blue-400 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="name-input w-28 rounded-md border border-white/[0.08] bg-white/[0.04] px-2 py-0.5 text-sm text-[#f7f8f8] focus:outline-none focus:ring-2 focus:ring-[#7170ff]/60"
             />
           ) : (
             <button
               onClick={() => setEditingName(true)}
-              className="name-btn text-sm text-gray-500 hover:text-blue-600 truncate max-w-[140px]"
+              className="name-btn max-w-[140px] truncate text-xs text-[#62666d] transition-colors duration-200 hover:text-[#8a8f98]"
               title="Set the name other people see"
             >
-              {displayName.trim() || "Set your name"}
+              {displayName.trim() || "set your name"}
             </button>
           )}
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-medium text-green-700 bg-green-100 px-2 py-1 rounded-full">🔒 E2EE</span>
+        <div className="flex items-center gap-1.5">
+          <span
+            className="inline-flex items-center gap-1.5 rounded-md border border-white/[0.08] bg-white/[0.04] px-2 py-1 text-[11px] font-medium text-[#a5acff]"
+            title="Messages are end-to-end encrypted. The server only relays ciphertext."
+          >
+            {IconShield}
+            E2EE
+          </span>
           {isReady && !vaultConfigured && !showVaultForm && (
             <button
               onClick={() => {
                 setShowVaultForm(true);
                 setVaultError("");
               }}
-              className="vault-enable-btn text-xs font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 px-2 py-1 rounded-full"
+              className="vault-enable-btn inline-flex items-center gap-1.5 rounded-md border border-white/[0.08] bg-white/[0.04] px-2 py-1 text-[11px] font-medium text-[#7a7fad] transition-colors duration-200 hover:bg-white/[0.07] hover:text-[#a5acff]"
               title="Encrypt your messages and identity keys at rest behind a passphrase"
             >
-              🔒 Set passphrase
+              {IconLock}
+              Passphrase
             </button>
           )}
           {isReady && vaultConfigured && (
             <button
               onClick={() => void lockNow()}
-              className="vault-lock-btn text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded-full"
+              className="vault-lock-btn inline-flex items-center gap-1.5 rounded-md border border-white/[0.08] bg-white/[0.04] px-2 py-1 text-[11px] font-medium text-[#7a7fad] transition-colors duration-200 hover:bg-white/[0.07] hover:text-[#a5acff]"
               title="Encrypt local data and require your passphrase"
             >
-              🔒 Lock now
+              {IconLock}
+              Lock
             </button>
           )}
           {!pushEnabled && isReady && (
             <button
               onClick={() => void enablePush()}
-              className="text-xs font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 px-2 py-1 rounded-full"
+              className="inline-flex items-center gap-1.5 rounded-md border border-white/[0.08] bg-white/[0.04] px-2 py-1 text-[11px] font-medium text-[#8a8f98] transition-colors duration-200 hover:bg-white/[0.07] hover:text-[#d0d6e0]"
               title="Get notified when messages arrive while the tab is closed"
             >
-              🔔 Enable notifications
+              {IconBell}
+              Push
             </button>
           )}
-          {onlineCount > 0 && <span className="text-xs text-gray-500">{onlineCount} online</span>}
-          <span className={`w-2 h-2 rounded-full ${isConnected ? "bg-green-500" : "bg-red-500"}`} />
-          <span className="text-xs text-gray-500 capitalize hidden sm:inline">{isConnected ? "connected" : "disconnected"}</span>
+          {onlineCount > 0 && <span className="text-xs text-[#8a8f98]">{onlineCount} online</span>}
+          <span
+            className={`h-1.5 w-1.5 rounded-full ${isConnected ? "pulse-dot bg-[#27a644]" : "bg-[#e5484d]"}`}
+            title={isConnected ? "Connected" : "Disconnected"}
+          />
         </div>
       </header>
 
-      {showVaultForm && (
-        <div className="fixed inset-0 z-20 bg-black/30 flex items-center justify-center px-4">
-          <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 max-w-sm w-full space-y-3">
-            <h2 className="text-base font-semibold text-gray-900">Encrypt local data</h2>
-            <p className="text-xs text-gray-500">
-              Messages and identity keys will be encrypted at rest behind this passphrase.
-              If you forget it, this device&apos;s history is unrecoverable.
-            </p>
-            <input
-              type="password"
-              placeholder="Passphrase (min 8 chars)"
-              value={vaultPass1}
-              onChange={(e) => setVaultPass1(e.target.value)}
-              className="vault-pass w-full px-3 py-2 text-base border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              type="password"
-              placeholder="Repeat passphrase"
-              value={vaultPass2}
-              onChange={(e) => setVaultPass2(e.target.value)}
-              className="vault-pass2 w-full px-3 py-2 text-base border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {vaultError && <p className="vault-error text-sm text-red-600">{vaultError}</p>}
-            <div className="flex gap-2 pt-1">
-              <button
-                onClick={() => void enableVault()}
-                className="vault-enable-save flex-1 bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700"
-              >
-                Enable & lock
-              </button>
-              <button
-                onClick={() => {
-                  setShowVaultForm(false);
-                  setVaultError("");
-                  setVaultPass1("");
-                  setVaultPass2("");
-                }}
-                className="flex-1 bg-gray-100 text-gray-700 py-2 rounded-xl hover:bg-gray-200"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <nav className="bg-white border-b border-gray-200 px-3 py-2 flex gap-2 overflow-x-auto sticky top-[57px] z-10">
+      {/* conversation chips */}
+      <nav className="scroll-dark sticky top-[49px] z-10 flex gap-1.5 overflow-x-auto border-b border-white/[0.05] bg-[#0f1011]/60 px-3 py-2">
         {peerIds.map((peerId) => {
           const conv: Conversation = { kind: "dm", peerId };
           const count = unread[roomFor(conv, myUserId())] ?? 0;
           const isActive = activeConv?.kind === "dm" && activeConv.peerId === peerId;
-          const label = peers[peerId]?.displayName?.trim() || shortLabel(peerId);
           return (
             <button
               key={peerId}
               onClick={() => setActiveConv(conv)}
-              className={`conv-chip flex-shrink-0 px-3 py-1.5 rounded-full text-sm border transition-colors ${
-                isActive
-                  ? "bg-blue-600 text-white border-blue-600"
-                  : "bg-white text-gray-700 border-gray-300 hover:border-blue-400"
-              }`}
+              className={`${chipBase} ${isActive ? chipActive : chipIdle}`}
               title={peerId}
             >
-              {label}
-              {count > 0 && (
-                <span
-                  className={`ml-1.5 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[11px] ${
-                    isActive ? "bg-white text-blue-600" : "bg-blue-600 text-white"
-                  }`}
-                >
-                  {count}
-                </span>
-              )}
+              {labelFor(peerId)}
+              {count > 0 && <span className={badgeCls(isActive)}>{count}</span>}
             </button>
           );
         })}
@@ -802,75 +806,85 @@ export default function ChatPage() {
             <button
               key={group.groupId}
               onClick={() => setActiveConv(conv)}
-              className={`conv-chip flex-shrink-0 px-3 py-1.5 rounded-full text-sm border transition-colors ${
-                isActive
-                  ? "bg-indigo-600 text-white border-indigo-600"
-                  : "bg-white text-gray-700 border-gray-300 hover:border-indigo-400"
-              }`}
+              className={`${chipBase} ${isActive ? chipActive : chipIdle}`}
               title={`${group.name} — members: ${group.members.join(", ")}`}
             >
-              # {group.name}
-              {count > 0 && (
-                <span
-                  className={`ml-1.5 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[11px] ${
-                    isActive ? "bg-white text-indigo-600" : "bg-indigo-600 text-white"
-                  }`}
-                >
-                  {count}
-                </span>
-              )}
+              #&nbsp;{group.name}
+              {count > 0 && <span className={badgeCls(isActive)}>{count}</span>}
             </button>
           );
         })}
         {peerIds.length > 0 && (
           <button
             onClick={() => void createGroup()}
-            className="conv-create flex-shrink-0 px-3 py-1.5 rounded-full text-sm border border-dashed border-gray-300 text-gray-500 hover:border-indigo-400 hover:text-indigo-500"
             aria-label="Create a group with current peers"
+            className="conv-create flex-shrink-0 rounded-full border border-dashed border-white/[0.12] px-2.5 py-1 text-[13px] font-medium text-[#62666d] transition-colors duration-200 hover:border-[#7170ff]/50 hover:text-[#a5acff]"
           >
-            + Group
+            +
           </button>
         )}
       </nav>
 
-      <main className="flex-1 overflow-y-auto p-4 space-y-4 pb-2">
+      {/* messages */}
+      <main className="scroll-dark flex-1 space-y-2.5 overflow-y-auto px-4 pt-5 pb-2">
         {!activeConv ? (
-          <p className="text-center text-gray-400 mt-10 text-sm">Waiting for someone to connect…</p>
+          <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/[0.03] text-[#62666d] ring-1 ring-white/[0.08]">
+              {IconShield}
+            </div>
+            <p className="max-w-[240px] text-sm text-[#62666d]">
+              Waiting for someone to connect. Everything you send here is end-to-end encrypted.
+            </p>
+          </div>
         ) : (
           <>
-            {activeMessages.map((msg) => (
-              <div key={msg.id} className={`flex ${msg.isOwn ? "justify-end" : "justify-start"}`}>
-                <div
-                  className={`max-w-[85%] px-4 py-2.5 rounded-2xl ${
-                    msg.isOwn
-                      ? "bg-blue-600 text-white rounded-br-none"
-                      : "bg-white text-gray-900 rounded-bl-none shadow-sm"
-                  }`}
-                >
-                  <p
-                    className={`text-sm leading-relaxed whitespace-pre-wrap break-words ${
-                      msg.text === UNABLE_TO_DECRYPT ? "italic opacity-60" : ""
-                    }`}
-                  >
-                    {msg.text}
-                  </p>
-                  <div className="flex items-center justify-end gap-1 mt-1">
-                    <p className={`text-xs ${msg.isOwn ? "text-blue-100" : "text-gray-400"}`}>
-                      {msg.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                    </p>
-                    {msg.isOwn && getStatusIcon(msg.status)}
+            {activeMessages.map((msg, idx) => {
+              const prev = idx > 0 ? activeMessages[idx - 1] : undefined;
+              const showSender = !msg.isOwn && (!prev || prev.senderId !== msg.senderId);
+              return (
+                <div key={msg.id} className={`bubble-in flex ${msg.isOwn ? "justify-end" : "justify-start"}`}>
+                  <div className={`max-w-[78%] sm:max-w-[65%] ${showSender ? "mt-2" : ""}`}>
+                    {showSender && (
+                      <div className="mb-1 ml-1 flex items-center gap-1.5">
+                        <span className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-[#7a7fad]/25 text-[9px] font-medium uppercase text-[#a5acff] ring-1 ring-[#7a7fad]/30">
+                          {(labelFor(msg.senderId)[0] ?? "?").toUpperCase()}
+                        </span>
+                        <span className="text-[11px] font-medium text-[#7a7fad]">{labelFor(msg.senderId)}</span>
+                      </div>
+                    )}
+                    <div
+                      className={`rounded-2xl px-3.5 py-2 text-[15px] leading-[1.45] ${
+                        msg.isOwn
+                          ? "rounded-br-md bg-[#5e6ad2] text-white shadow-[0_1px_2px_rgba(0,0,0,0.25)]"
+                          : "rounded-bl-md border border-white/[0.06] bg-[#191a1b] text-[#f7f8f8]"
+                      }`}
+                    >
+                      <p className={`whitespace-pre-wrap break-words ${msg.text === UNABLE_TO_DECRYPT ? "italic opacity-50" : ""}`}>
+                        {msg.text}
+                      </p>
+                      <div className={`mt-0.5 flex items-center justify-end gap-1 ${msg.isOwn ? "-mr-1" : "-ml-1"}`}>
+                        <span className={`font-mono text-[10px] ${msg.isOwn ? "text-white/60" : "text-[#62666d]"}`}>
+                          {msg.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                        </span>
+                        {msg.isOwn && getStatusIcon(msg.status)}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
 
             {otherTypingInActive && (
               <div className="flex justify-start">
-                <div className="bg-white px-4 py-2 rounded-2xl rounded-bl-none shadow-sm">
-                  <div className="flex gap-1 text-gray-500">
-                    <span className="animate-bounce">●</span>
-                    <span className="animate-bounce" style={{ animationDelay: "0.1s" }}>●</span>
-                    <span className="animate-bounce" style={{ animationDelay: "0.2s" }}>●</span>
+                <div className="rounded-2xl rounded-bl-md border border-white/[0.06] bg-[#191a1b] px-4 py-2.5">
+                  <div className="flex gap-1">
+                    {[0, 1, 2].map((i) => (
+                      <span
+                        key={i}
+                        className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#8a8f98]"
+                        style={{ animationDelay: `${i * 120}ms` }}
+                      />
+                    ))}
                   </div>
                 </div>
               </div>
@@ -881,40 +895,94 @@ export default function ChatPage() {
         <div ref={messagesEndRef} />
       </main>
 
-      <footer className="bg-white border-t border-gray-200 p-4 pb-safe pb-4 sticky bottom-0">
-        <div className="flex items-end gap-2 max-w-3xl mx-auto">
-          <textarea
-            ref={textareaRef}
-            value={input}
-            onChange={handleInputChange}
-            onKeyDown={handleKeyDown}
-            placeholder={
-              !isReady
-                ? "Setting up encryption..."
-                : activeConv
-                  ? activeConv.kind === "group"
-                    ? `Message #${groups[activeConv.groupId]?.name ?? "group"}...`
-                    : `Message ${shortLabel(activeConv.peerId)}...`
-                  : "Waiting for a peer..."
-            }
-            disabled={!isReady}
-            className="flex-1 bg-gray-100 border border-gray-300 rounded-2xl px-4 py-3 text-base text-gray-900 placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent max-h-40 min-h-[48px] disabled:opacity-60"
-            rows={1}
-            style={{ fontSize: "16px" }}
-            autoComplete="off"
-            autoCorrect="on"
-            autoCapitalize="sentences"
-            spellCheck={true}
-            inputMode="text"
-          />
+      {/* vault enable modal */}
+      {showVaultForm && (
+        <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm">
+          <div className="w-full max-w-sm rounded-[1.5rem] bg-white/[0.03] p-[7px] ring-1 ring-white/[0.08]">
+            <div className="space-y-4 rounded-[calc(1.5rem-7px)] border border-white/[0.06] bg-[#0f1011] p-6">
+              <div className="space-y-1">
+                <h2 className="text-base font-medium text-[#f7f8f8]">Encrypt local data</h2>
+                <p className="text-xs leading-relaxed text-[#8a8f98]">
+                  Messages and identity keys will be encrypted at rest behind this passphrase.
+                  If you forget it, this device&apos;s history is unrecoverable.
+                </p>
+              </div>
+              <input
+                type="password"
+                placeholder="Passphrase (min 8 characters)"
+                value={vaultPass1}
+                onChange={(e) => setVaultPass1(e.target.value)}
+                className="vault-pass w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-3 py-2 text-base text-[#f7f8f8] placeholder:text-[#62666d] focus:outline-none focus:ring-2 focus:ring-[#7170ff]/60"
+              />
+              <input
+                type="password"
+                placeholder="Repeat passphrase"
+                value={vaultPass2}
+                onChange={(e) => setVaultPass2(e.target.value)}
+                className="vault-pass2 w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-3 py-2 text-base text-[#f7f8f8] placeholder:text-[#62666d] focus:outline-none focus:ring-2 focus:ring-[#7170ff]/60"
+              />
+              {vaultError && <p className="vault-error text-sm text-[#e5484d]">{vaultError}</p>}
+              <div className="flex gap-2 pt-1">
+                <button
+                  onClick={() => void enableVault()}
+                  className="vault-enable-save flex-1 rounded-xl bg-[#5e6ad2] py-2 text-sm font-medium text-white transition-all duration-200 hover:bg-[#7170ff] active:scale-[0.98]"
+                >
+                  Enable &amp; lock
+                </button>
+                <button
+                  onClick={() => {
+                    setShowVaultForm(false);
+                    setVaultError("");
+                    setVaultPass1("");
+                    setVaultPass2("");
+                  }}
+                  className="flex-1 rounded-xl bg-white/[0.04] py-2 text-sm text-[#d0d6e0] transition-colors duration-200 hover:bg-white/[0.07]"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* composer */}
+      <footer className="sticky bottom-0 border-t border-white/[0.06] bg-[#0f1011]/90 p-3 pb-safe backdrop-blur-sm">
+        <div className="mx-auto flex max-w-3xl items-end gap-2">
+          <div className="flex-1 rounded-[1.35rem] bg-white/[0.03] ring-1 ring-white/[0.08] focus-within:ring-2 focus-within:ring-[#7170ff]/50">
+            <textarea
+              ref={textareaRef}
+              value={input}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+              placeholder={
+                !isReady
+                  ? "Setting up encryption..."
+                  : activeConv
+                    ? activeConv.kind === "group"
+                      ? `Message #${groups[activeConv.groupId]?.name ?? "group"}...`
+                      : `Message ${labelFor(activeConv.peerId)}...`
+                    : "Waiting for a peer..."
+              }
+              disabled={!isReady}
+              rows={1}
+              style={{ fontSize: "16px" }}
+              autoComplete="off"
+              autoCorrect="on"
+              autoCapitalize="sentences"
+              spellCheck={true}
+              inputMode="text"
+              className="max-h-40 min-h-[44px] w-full resize-none bg-transparent px-4 py-2.5 text-base text-[#f7f8f8] placeholder:text-[#62666d] focus:outline-none disabled:opacity-60"
+            />
+          </div>
           <button
             onClick={() => void sendMessage()}
             disabled={!input.trim() || !isConnected || !isReady || !activeConv}
-            className="bg-blue-600 text-white p-3 rounded-xl hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-w-[48px] min-h-[48px] flex-shrink-0"
             aria-label="Send message"
+            className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-[#5e6ad2] text-white transition-all duration-200 hover:bg-[#7170ff] active:scale-95 disabled:opacity-40"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <path d="M12 19V5m0 0l-6 6m6-6l6 6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
         </div>

@@ -107,7 +107,7 @@ async function main() {
   b.on("pageerror", (e) => errors.push(String(e)));
   await b.goto(URL, { waitUntil: "networkidle" });
   await waitReady(b);
-  await b.getByRole("button", { name: /Enable notifications/ }).click();
+  await b.getByRole("button", { name: /^Push$/ }).click();
   await new Promise((r) => setTimeout(r, 500));
 
   try {

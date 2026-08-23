@@ -1,28 +1,38 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-canvas: #08090a;
+  --bg-panel: #0f1011;
+  --bg-surface: #191a1b;
+  --text-primary: #f7f8f8;
+  --text-secondary: #d0d6e0;
+  --text-muted: #8a8f98;
+  --text-faint: #62666d;
+  --accent: #5e6ad2;
+  --accent-bright: #7170ff;
+  --accent-hover: #828fff;
+  --security-lavender: #7a7fad;
+  --status-online: #27a644;
+  --error: #e5484d;
+  --border-hairline: rgba(255, 255, 255, 0.06);
+  --border-standard: rgba(255, 255, 255, 0.08);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "cv01", "ss03";
+  -webkit-font-smoothing: antialiased;
 }
 
 @layer utilities {
@@ -42,7 +52,67 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-textarea, input {
+textarea,
+input {
   -webkit-appearance: none;
   appearance: none;
+}
+
+/* ---- motion (GPU-safe; reduced-motion disables all) ---- */
+
+@keyframes bubble-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(39, 166, 68, 0.45);
+  }
+  60% {
+    box-shadow: 0 0 0 5px rgba(39, 166, 68, 0);
+  }
+}
+
+.bubble-in {
+  animation: bubble-in 240ms cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+.pulse-dot {
+  animation: pulse-dot 2s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---- thin scrollbars on dark canvas ---- */
+
+.scroll-dark {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+}
+.scroll-dark::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.scroll-dark::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+}
+.scroll-dark::-webkit-scrollbar-track {
+  background: transparent;
 }
